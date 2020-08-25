@@ -87,8 +87,9 @@ function toXmpSimple(parent, value) {
  * @param {*} parent Parent XML element to add the array to
  * @param {Object[]} array Array to serialize
  * @param {Boolean} isBag True if the output should be a rdf:Bag otherwise rdf:Seq
+ * @param {XmpSerializationOptions} [options] Serialization options
  */
-function toXmpArray(parent, array, isBag) {
+function toXmpArray(parent, array, isBag, options) {
     const element = parent.ele(isBag ? RDF_BAG : RDF_SEQ);
     for (const value of array) {
         if (isDefined(value)) {
@@ -96,7 +97,7 @@ function toXmpArray(parent, array, isBag) {
             if (Array.isArray(value)) {
                 throw Error("Nested arrays are not supported");
             } else if (isObject(value) && !isDate(value)) {
-                toXmpStructure(li, value);
+                toXmpStructure(li, value, options);
             } else {
                 toXmpSimple(li, value);
             }    
@@ -114,15 +115,16 @@ function toXmpArray(parent, array, isBag) {
  */
 function toXmpStructure(parent, obj, options) {
     const xmpBags = (options && options.xmpBags) || [];
+    console.log("bags", xmpBags);
     const rdfDescription = parent.ele(RDF_DESCRIPTION);
     for (const [key, value] of Object.entries(obj)) {
         if (isDefined(value)) {
             const element = rdfDescription.ele(key);
             if (Array.isArray(value)) {
                 const isBag = xmpBags.indexOf(key) >= 0;
-                toXmpArray(element, value, isBag);
+                toXmpArray(element, value, isBag, options);
             } else if (isObject(value) && !isDate(value)) {
-                toXmpStructure(element, value);
+                toXmpStructure(element, value, options);
             } else {
                 toXmpSimple(element, value);
             }
@@ -166,7 +168,7 @@ function serializeXmp(obj, options) {
     }
 
     // convert structure and make sure that the generated XML is well-formed
-    toXmpStructure(rdf, obj);
+    toXmpStructure(rdf, obj, options);
     return root.toString({ wellFormed: true });
 }
 

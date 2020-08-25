@@ -24,6 +24,13 @@ describe("serializexmp", () => {
                 });
             }, Error);
         });
+        it("nested-array", () => {
+            assert.throws(() => {
+                serializeXmp({
+                    "key": [ [123] ]
+                });
+            }, Error);
+        });
     });
     describe("simple", () => {
         it("undefined", () => {
@@ -76,6 +83,88 @@ describe("serializexmp", () => {
                 "key": epoch 
             });
             assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key>1970-01-01T00:00:00.000Z</key></rdf:Description></rdf:RDF>');
+        });
+    });
+    describe("sequence", () => {
+        it("undefined", () => {
+            const xmp = serializeXmp({
+                "key": [ undefined ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Seq/></key></rdf:Description></rdf:RDF>');
+        });
+        it("null", () => {
+            const xmp = serializeXmp({
+                "key": [ null ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Seq/></key></rdf:Description></rdf:RDF>');
+        });
+        it("boolean", () => {
+            const xmp = serializeXmp({
+                "key": [ true, false ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Seq><rdf:li>True</rdf:li><rdf:li>False</rdf:li></rdf:Seq></key></rdf:Description></rdf:RDF>');
+        });
+        it("integer", () => {
+            const xmp = serializeXmp({
+                "key": [ 1234 ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Seq><rdf:li>1234</rdf:li></rdf:Seq></key></rdf:Description></rdf:RDF>');
+        });
+        it("real", () => {
+            const xmp = serializeXmp({
+                "key": [ 123.45 ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Seq><rdf:li>123.45</rdf:li></rdf:Seq></key></rdf:Description></rdf:RDF>');
+        });
+        it("text", () => {
+            const xmp = serializeXmp({
+                "key": [ "text" ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Seq><rdf:li>text</rdf:li></rdf:Seq></key></rdf:Description></rdf:RDF>');
+        });
+        it("uri", () => {
+            const xmp = serializeXmp({
+                "key": [ "http://www.adobe.com" ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Seq><rdf:li rdf:resource="http://www.adobe.com"/></rdf:Seq></key></rdf:Description></rdf:RDF>');
+        });
+        it("date", () => {
+            const epoch = new Date();
+            epoch.setTime(0);
+            const xmp = serializeXmp({
+                "key": [ epoch ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Seq><rdf:li>1970-01-01T00:00:00.000Z</rdf:li></rdf:Seq></key></rdf:Description></rdf:RDF>');
+        });
+    });
+    describe("bag", () => {
+        it("top-level", () => {
+            const xmp = serializeXmp({
+                "key": [ 123, "text", null, true, undefined, false ]
+            }, {
+                xmpBags: [ "key" ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key><rdf:Bag><rdf:li>123</rdf:li><rdf:li>text</rdf:li><rdf:li>True</rdf:li><rdf:li>False</rdf:li></rdf:Bag></key></rdf:Description></rdf:RDF>');    
+        });
+        it("nested-struct", () => {
+            const xmp = serializeXmp({
+                "top": {
+                    key: [ 123, "text", null, true, undefined, false ]
+                }
+            }, {
+                xmpBags: [ "key" ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><top><rdf:Description><key><rdf:Bag><rdf:li>123</rdf:li><rdf:li>text</rdf:li><rdf:li>True</rdf:li><rdf:li>False</rdf:li></rdf:Bag></key></rdf:Description></top></rdf:Description></rdf:RDF>');
+        });
+        it("nested-struct-array", () => {
+            const xmp = serializeXmp({
+                "top": [{
+                    key: [ 123, "text", null, true, undefined, false ]
+                }]
+            }, {
+                xmpBags: [ "key" ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><top><rdf:Seq><rdf:li><rdf:Description><key><rdf:Bag><rdf:li>123</rdf:li><rdf:li>text</rdf:li><rdf:li>True</rdf:li><rdf:li>False</rdf:li></rdf:Bag></key></rdf:Description></rdf:li></rdf:Seq></top></rdf:Description></rdf:RDF>');
         });
     });
 });
