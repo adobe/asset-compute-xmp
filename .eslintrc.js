@@ -10,10 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
-"use strict";
-
-const { serializeXmp } = require("./lib/serializexmp");
+'use strict';
 
 module.exports = {
-    serializeXmp
+    "extends": "@adobe/eslint-config-asset-compute"
 };
