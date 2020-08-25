@@ -1,0 +1,23 @@
+{
+  "name": "worker-custom-metadata",
+  "version": "1.0.0",
+  "description": "Custom Metadata Worker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git:bmanen/worker-custom-metadata"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nui/eslint-config": "^2.0.0",
+    "eslint": "^7.7.0",
+    "isobject": "^4.0.0"
+  },
+  "dependencies": {
+    "xmlbuilder2": "^2.3.1"
+  }
+}
