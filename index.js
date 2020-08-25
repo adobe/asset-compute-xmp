@@ -19,11 +19,13 @@
 
 const { create } = require("xmlbuilder2");
 const isObject = require("isobject");
+const validUrl = require('valid-url');
 
 const RDF_BAG = "rdf:Bag";
 const RDF_DESCRIPTION = "rdf:Description";
 const RDF_LI = "rdf:li";
 const RDF_RDF = "rdf:RDF";
+const RDF_RESOURCE = "rdf:resource";
 const RDF_SEQ = "rdf:Seq";
 const RDF_XML_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
@@ -34,7 +36,22 @@ const RDF_XML_NAMESPACE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
  */
 
 /**
- * Convert an array to an rdf:Seq or rdf:Bag
+ * Serialize a simple value (e.g. string or number)
+ * See: XMP Specification Part 1 - Chapter 7.5
+ * 
+ * @param {*} parent Parent XML element to add the simple value to
+ * @param {String|Number} value Simple value
+ */
+function toXmpSimple(parent, value) {
+    if (validUrl.isUri(value)) {
+        parent.att(RDF_XML_NAMESPACE, RDF_RESOURCE, value);
+    } else {
+        parent.txt(value);
+    }
+}
+
+/**
+ * Serialize an array to a ordered sequence (rdf:Seq) or unordered set (rdf:Bag)
  * See: XMP Specification Part 1 - Chapter 7.7
  * Limitation: Nested arrays are not supported and will return in an Error
  * 
@@ -51,13 +68,13 @@ function toXmpArray(parent, array, isBag) {
         } else if (isObject(value)) {
             toXmpStructure(li, value);
         } else {
-            li.txt(value);
+            toXmpSimple(li, value);
         }
     }
 }
 
 /**
- * Convert an object to an XMP structure
+ * Serialize an object to a XMP structure
  * See: XMP Specification Part 1 - Chapter 7.6
  * 
  * @param {*} parent Parent XML element to add the structure to
@@ -75,13 +92,13 @@ function toXmpStructure(parent, obj, options) {
         } else if (isObject(value)) {
             toXmpStructure(element, value);
         } else {
-            element.txt(value);
+            toXmpSimple(element, value);
         }
     }
 }
 
 /**
- * Convert an object to XMP compliant metadata
+ * Serialize an object to XMP compliant metadata
  * 
  * Arrays are converted to ordered arrays (rdf:Seq) by default, but can also be
  * serialized as unordered arrays (rdf:Bag) by providing the key in the `xmpBags`
@@ -91,8 +108,9 @@ function toXmpStructure(parent, obj, options) {
  * the key and the URI as the value, e.g. { "xyz": "http://path/to/xyz/schema" }.
  * 
  * Limitations:
- * - rdf:Alt, i.e. alternative arrays, are not supported
+ * - Alternative arrays (rdf:Alt) are not supported
  * - Nested arrays are not supported
+ * - Qualifiers, including xml:lang, are not supported
  * 
  * @param {Object} obj Structure to convert to XMP compliant metadata
  * @param {XmpSerializationOptions} [options] Serialization options
@@ -120,7 +138,8 @@ async function main() {
         "dam:name": {
             "dam:xyz": "value"
         }, 
-        "dam:array": ["a","b","c"]
+        "dam:array": ["a","b","c"],
+        "dam:url": "http://www.adobe.com"
     }, {
         namespaces: {
             dam: "http://www.day.com/dam/1.0"

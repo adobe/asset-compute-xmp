@@ -18,6 +18,8 @@
     "isobject": "^4.0.0"
   },
   "dependencies": {
+    "isuri": "^2.0.3",
+    "valid-url": "^1.0.9",
     "xmlbuilder2": "^2.3.1"
   }
 }
