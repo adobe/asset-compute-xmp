@@ -167,23 +167,75 @@ describe("serializexmp", () => {
             assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><top><rdf:Seq><rdf:li><rdf:Description><key><rdf:Bag><rdf:li>123</rdf:li><rdf:li>text</rdf:li><rdf:li>True</rdf:li><rdf:li>False</rdf:li></rdf:Bag></key></rdf:Description></rdf:li></rdf:Seq></top></rdf:Description></rdf:RDF>');
         });
     });
+    describe("namespaces", () => {
+        it("simple", () => {
+            const xmp = serializeXmp({
+                "ns1:key": "value"
+            }, {
+                namespaces: {
+                    ns1: "http://ns1.com"
+                }
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ns1="http://ns1.com"><rdf:Description><ns1:key>value</ns1:key></rdf:Description></rdf:RDF>');
+        });
+        it("struct", () => {
+            const xmp = serializeXmp({
+                "ns1:key1": {
+                    "ns1:key2": "value"
+                }
+            }, {
+                namespaces: {
+                    ns1: "http://ns1.com"
+                }
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ns1="http://ns1.com"><rdf:Description><ns1:key1><rdf:Description><ns1:key2>value</ns1:key2></rdf:Description></ns1:key1></rdf:Description></rdf:RDF>');
+        });
+        it("sequence", () => {
+            const xmp = serializeXmp({
+                "ns1:key1": [ "value" ]
+            }, {
+                namespaces: {
+                    ns1: "http://ns1.com"
+                }
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ns1="http://ns1.com"><rdf:Description><ns1:key1><rdf:Seq><rdf:li>value</rdf:li></rdf:Seq></ns1:key1></rdf:Description></rdf:RDF>');
+        });
+        it("bag", () => {
+            const xmp = serializeXmp({
+                "ns1:key1": [ "value" ]
+            }, {
+                namespaces: {
+                    ns1: "http://ns1.com"
+                },
+                xmpBags: [ "ns1:key1" ]
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ns1="http://ns1.com"><rdf:Description><ns1:key1><rdf:Bag><rdf:li>value</rdf:li></rdf:Bag></ns1:key1></rdf:Description></rdf:RDF>');
+        });
+        it("nested-struct", () => {
+            const xmp = serializeXmp({
+                "ns1:key": {
+                    "ns2:key": "value"
+                }
+            }, {
+                namespaces: {
+                    ns1: "http://ns1.com",
+                    ns2: "http://ns2.com"
+                }
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ns1="http://ns1.com" xmlns:ns2="http://ns2.com"><rdf:Description><ns1:key><rdf:Description><ns2:key>value</ns2:key></rdf:Description></ns1:key></rdf:Description></rdf:RDF>');
+        });
+        it("nested-sequence", () => {
+            const xmp = serializeXmp({
+                "ns1:key": [{
+                    "ns2:key": "value"
+                }]
+            }, {
+                namespaces: {
+                    ns1: "http://ns1.com",
+                    ns2: "http://ns2.com"
+                }
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ns1="http://ns1.com" xmlns:ns2="http://ns2.com"><rdf:Description><ns1:key><rdf:Seq><rdf:li><rdf:Description><ns2:key>value</ns2:key></rdf:Description></rdf:li></rdf:Seq></ns1:key></rdf:Description></rdf:RDF>');
+        });
+    });
 });
-
-// async function main() {
-//     console.log(toXmp({
-//         "dam:name": {
-//             "dam:xyz": "value"
-//         }, 
-//         "dam:array": ["a","b","c"],
-//         "dam:url": "http://www.adobe.com",
-//         "dam:array2": [
-//             "http://www.adobe.com",
-//             "http://www.adobe.com",
-//             "http://www.adobe.com",
-//         ]
-//     }, {
-//         namespaces: {
-//             dam: "http://www.day.com/dam/1.0"
-//         }
-//     }));
-// }
