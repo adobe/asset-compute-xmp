@@ -12,15 +12,70 @@
 
 "use strict";
 
-// const assert = require("assert");
+const { serializeXmp } = require("../index");
+const assert = require("assert");
 
 describe("serializexmp", () => {
-    describe("simple", () => {
-        it("true", () => {
-
+    describe("invalid", () => {
+        it("function", () => {
+            assert.throws(() => {
+                serializeXmp({
+                    "key": () => {},
+                });
+            }, Error);
         });
-        it("false", () => {
-
+    });
+    describe("simple", () => {
+        it("undefined", () => {
+            const xmp = serializeXmp({
+                "key": undefined
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description/></rdf:RDF>');
+        });
+        it("null", () => {
+            const xmp = serializeXmp({
+                "key": null
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description/></rdf:RDF>');
+        });
+        it("boolean", () => {
+            const xmp = serializeXmp({
+                "key1": true,
+                "key2": false
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key1>True</key1><key2>False</key2></rdf:Description></rdf:RDF>');
+        });
+        it("integer", () => {
+            const xmp = serializeXmp({
+                "key": 1234
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key>1234</key></rdf:Description></rdf:RDF>');
+        });
+        it("real", () => {
+            const xmp = serializeXmp({
+                "key": 123.45
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key>123.45</key></rdf:Description></rdf:RDF>');
+        });
+        it("text", () => {
+            const xmp = serializeXmp({
+                "key": "text"
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key>text</key></rdf:Description></rdf:RDF>');
+        });
+        it("uri", () => {
+            const xmp = serializeXmp({
+                "key": "http://www.adobe.com"
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key rdf:resource="http://www.adobe.com"/></rdf:Description></rdf:RDF>');
+        });
+        it("date", () => {
+            const epoch = new Date();
+            epoch.setTime(0);
+            const xmp = serializeXmp({
+                "key": epoch 
+            });
+            assert.strictEqual(xmp, '<?xml version="1.0" encoding="UTF-8"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><rdf:Description><key>1970-01-01T00:00:00.000Z</key></rdf:Description></rdf:RDF>');
         });
     });
 });
