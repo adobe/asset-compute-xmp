@@ -8,7 +8,7 @@
     - [Serialize an ordered sequence of values](#serialize-an-ordered-sequence-of-values)
     - [Serialize an unordered set of values](#serialize-an-unordered-set-of-values)
     - [Serialize a nested structure](#serialize-a-nested-structure)
-    - [Namespaced properties](#namespaced-properties)
+    - [Serialize namespaced properties](#serialize-namespaced-properties)
 
 # asset-compute-xmp
 
@@ -124,7 +124,7 @@ console.log(serializeXmp({
 </rdf:RDF>
 ```
 
-### Namespaced properties
+### Serialize namespaced properties
 
 ```javascript
 const { serializeXmp } = require("@adobe/asset-compute-xmp");
