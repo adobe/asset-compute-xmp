@@ -115,7 +115,6 @@ function toXmpArray(parent, array, isBag, options) {
  */
 function toXmpStructure(parent, obj, options) {
     const xmpBags = (options && options.xmpBags) || [];
-    console.log("bags", xmpBags);
     const rdfDescription = parent.ele(RDF_DESCRIPTION);
     for (const [key, value] of Object.entries(obj)) {
         if (isDefined(value)) {
