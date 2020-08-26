@@ -9,6 +9,7 @@
     - [Serialize an unordered set of values](#serialize-an-unordered-set-of-values)
     - [Serialize a nested structure](#serialize-a-nested-structure)
     - [Serialize namespaced properties](#serialize-namespaced-properties)
+  - [License and Contributing Guidelines](#license-and-contributing-guidelines)
 
 # asset-compute-xmp
 
@@ -161,3 +162,8 @@ console.log(serializeXmp({
   </rdf:Description>
 </rdf:RDF>
 ```
+
+## License and Contributing Guidelines
+
+- [License](./LICENSE)
+- [Contributing Guildelines](./.github/CONTRIBUTING.md)
