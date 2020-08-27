@@ -1,5 +1,7 @@
-<!--- when a new release happens, the VERSION and URL in the badge have to be manually updated because it's a private registry --->
 [![Version](https://img.shields.io/npm/v/@adobe/asset-compute-xmp.svg)](https://npmjs.org/package/@adobe/asset-compute-xmp)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![codecov](https://codecov.io/gh/adobe/asset-compute-xmp/branch/master/graph/badge.svg)](https://codecov.io/gh/adobe/asset-compute-xmp)
+[![Travis](https://travis-ci.com/adobe/asset-compute-xmp.svg?branch=master)](https://travis-ci.com/adobe/asset-compute-xmp)
 
 - [asset-compute-xmp](#asset-compute-xmp)
   - [Installation](#installation)
