@@ -15,7 +15,7 @@
 
 # asset-compute-xmp
 
-Metadata XMP serialization used by custom Adobe Asset Compute serverless actions
+Metadata XMP serialization used by custom Adobe Asset Compute serverless actions.
 
 ## Installation
 
